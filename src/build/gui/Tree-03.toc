@@ -1,0 +1,7 @@
+('c:\\users\\xuanxuan\\appdata\\local\\programs\\python\\python310\\lib\\site-packages\\scapy-git_archive.dev3276a6559b5-py3.10.egg',
+ None,
+ {'*.cp310-win_amd64.pyd', '*.pyc', '*.py', '*.pyd', 'EGG-INFO', '*.pyw'},
+ 'DATA',
+ [('share\\man\\man1\\scapy.1',
+   'c:\\users\\xuanxuan\\appdata\\local\\programs\\python\\python310\\lib\\site-packages\\scapy-git_archive.dev3276a6559b5-py3.10.egg\\share\\man\\man1\\scapy.1',
+   'DATA')])

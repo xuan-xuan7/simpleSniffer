@@ -1,0 +1,60 @@
+###[ Ethernet ]### 
+  dst       = 33:33:00:01:00:02
+  src       = 50:0f:f5:ea:b6:90
+  type      = IPv6
+###[ IPv6 ]### 
+     version   = 6
+     tc        = 0
+     fl        = 0
+     plen      = 94
+     nh        = UDP
+     hlim      = 1
+     src       = fe80::520f:f5ff:feea:b690
+     dst       = ff02::1:2
+###[ UDP ]### 
+        sport     = dhcpv6_client
+        dport     = dhcpv6_server
+        len       = 94
+        chksum    = 0xa175
+###[ DHCPv6 Solicit Message ]### 
+           msgtype   = SOLICIT
+           trid      = 0x7d766
+###[ DHCP6 Client Identifier Option ]### 
+              optcode   = CLIENTID
+              optlen    = 10
+              \duid      \
+               |###[ DUID - Based on Link-layer Address ]### 
+               |  type      = Link-layer Address
+               |  hwtype    = Ethernet (10Mb)
+               |  lladdr    = 50:0f:f5:ea:b6:90
+###[ DHCP6 Identity Association for Non-temporary Addresses Option ]### 
+                 optcode   = IA_NA
+                 optlen    = 12
+                 iaid      = 0x64
+                 T1        = 0
+                 T2        = 0
+                 \ianaopts  \
+###[ DHCP6 Elapsed Time Option ]### 
+                    optcode   = ELAPSED_TIME
+                    optlen    = 2
+                    elapsedtime= 60.20 sec
+###[ DHCP6 Option Request Option ]### 
+                       optcode   = ORO
+                       optlen    = 4
+                       reqopts   = [DNS Recursive Name Server Option, Domain Search List option]
+###[ DHCP6 Vendor Class Option ]### 
+                          optcode   = VENDOR_CLASS
+                          optlen    = 18
+                          enterprisenum= 3561
+                          \vcdata    \
+                           |###[ vendor class data ]### 
+                           |  len       = 3072
+                           |  data      = 'dslforum.org'
+###[ DHCP6 Option - Identity Association for Prefix Delegation ]### 
+                             optcode   = OPTION_IA_PD
+                             optlen    = 12
+                             iaid      = 0x64
+                             T1        = 0
+                             T2        = 0
+                             \iapdopt   \
+
