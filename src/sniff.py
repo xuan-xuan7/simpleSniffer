@@ -157,6 +157,8 @@ def write_pcap(x):
 
 # dpkt解析包
 def dpkt_analyse(num):
+    if not os.path.exists('data.pcap'):
+        return
     pcap = rdpcap('data.pcap')
     cnt = 0
     savedStdout = sys.stdout  #保存标准输出流
@@ -181,6 +183,8 @@ def dpkt_analyse(num):
 
 # dpkt展示16进制
 def dpkt_hex(num):
+    if not os.path.exists('data.pcap'):
+        return
     f = open('data.pcap', 'rb')
     pcap = dpkt.pcap.Reader(f)
     cnt = 0
@@ -198,6 +202,8 @@ def dpkt_hex(num):
 
 # 解析列表展示项
 def show_list():
+    if not os.path.exists('data.pcap'):
+        return
     f = open('data.pcap', 'rb')
     pcap = dpkt.pcap.Reader(f)
     packets_list = []

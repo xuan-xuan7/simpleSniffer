@@ -4,6 +4,9 @@ from tkinter import scrolledtext
 import tkinter
 import sniff
 import threading
+import inspect
+import ctypes
+
 
 class App:
 
@@ -15,9 +18,11 @@ class App:
         self.proto_dict = ['(tcp and ( port 80)) or (tcp and ( port 443))', 'tcp', 'udp', 'icmp or icmp6', 'ip', 'ip6', 'arp']
         self.main_window()
 
-
     # 开始sniff
     def start_sniff(self):
+        self.data_box.config(state=tkinter.NORMAL)
+        self.data_box.delete(1.0, 'end')
+        self.data_box.config(state=tkinter.DISABLED)
         for i in range(7):
             if self.filter_var[i].get() == 1:
                 if self.filter_para == None:
@@ -32,7 +37,54 @@ class App:
         self.analyse_box.insert('end', 'The sniffer is running.\nAfter stop sniffer, you can see the results.')
         self.analyse_box.config(state=tkinter.DISABLED)
         self.t1.start()
-        
+
+
+    def get_start_with_ip_port(self):
+        self.data_box.config(state=tkinter.NORMAL)
+        self.data_box.delete(1.0, 'end')
+        self.data_box.config(state=tkinter.DISABLED)
+        if self.entry1.get() != '' and self.entry2.get() != '':
+            self.filter_para = '(net ' + self.entry1.get() + ') and (port ' + self.entry2.get() + ') and tcp'
+        elif self.entry1.get() != '':
+            self.filter_para = '(net ' +self.entry1.get() + ') and tcp'
+        elif self.entry2.get() != '':
+            self.filter_para = '(port ' +self.entry2.get() + ') and tcp'
+        else:
+            self.filter_para = None
+        self.t1 = threading.Thread(target=sniff.start_sniff, args=(self.e, self.filter_para))
+        self.t1.Daemon = True
+        self.del_list(self.table)
+        self.analyse_box.config(state=tkinter.NORMAL)
+        self.analyse_box.delete(1.0, 'end')
+        self.analyse_box.insert('end', 'The sniffer is running.\nAfter stop sniffer, you can see the results.')
+        self.analyse_box.config(state=tkinter.DISABLED)
+        self.t1.start()
+        self.sub_tk.destroy()
+
+    # IP+Port+TCP流追踪
+    def start_with_IP_Port(self):
+        self.entry_txt1 = StringVar()
+        self.entry_txt2 = StringVar()
+        self.sub_tk = Tk()
+        tk_width, tk_height =300, 100
+        position = self.window_center(tk_width, tk_height)
+        self.sub_tk.geometry(f'{tk_width}x{tk_height}+{position[0]}+{position[1]}')
+        self.sub_tk.title("IP+Prot")
+        self.label1 = Label(self.sub_tk, text='IP address:', justify=RIGHT, padx=10)
+        self.label2 = Label(self.sub_tk, text='Port:', justify=RIGHT, padx=10)
+        self.label1.grid(row=1, column=1)
+        self.label2.grid(row=3, column=1)
+        self.entry1 = Entry(self.sub_tk, textvariable=self.entry_txt1)
+        self.entry1.grid(row=1, column=3)
+        self.entry2 = Entry(self.sub_tk, textvariable=self.entry_txt2)
+        self.entry2.grid(row=3, column=3)
+        self.button1 = Button(self.sub_tk, text='Start', command=self.get_start_with_ip_port)
+        self.button2 = Button(self.sub_tk, text='Cancel', command=self.sub_tk.destroy)
+        sep = ttk.Separator(self.sub_tk, orient=HORIZONTAL)
+        sep.grid(row=5)
+        self.button1.grid(row=7, column=2)
+        self.button2.grid(row=7, column=3)
+        self.sub_tk.mainloop()
 
     # 选择list中的一个包显示analyse
     def show_analyse(self, event):
@@ -86,9 +138,15 @@ class App:
         self.analyse_box.delete(1.0, 'end')
         self.analyse_box.config(state=tkinter.DISABLED)
         packets_list = sniff.show_list()
-        for p in packets_list:
-            self.table.insert('','end',values=p)
-        self.table.update()
+        if packets_list is None:
+            self.analyse_box.config(state=tkinter.NORMAL)
+            self.analyse_box.delete(1.0, 'end')
+            self.analyse_box.insert('end','no packet was captured!')
+            self.analyse_box.config(state=tkinter.DISABLED)
+        else:
+            for p in packets_list:
+                self.table.insert('','end',values=p)
+            self.table.update()
         self.e = threading.Event()
 
     
@@ -128,6 +186,7 @@ class App:
         self.filter_bar.add_checkbutton(label='IPv6', variable=self.filter_var[5])
         self.filter_bar.add_checkbutton(label='ARP', variable=self.filter_var[6])
         self.menu_bar.add_cascade(label="Fliter", menu=self.filter_bar)
+        self.menu_bar.add_command(label="Start with IP+Port", command=self.start_with_IP_Port)
         self.menu_bar.add_command(label="Start", command=self.start_sniff)
         self.menu_bar.add_command(label="Stop", command=self.stop_sniff)
         root.config(menu=self.menu_bar)
