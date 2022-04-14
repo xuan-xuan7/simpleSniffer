@@ -196,6 +196,7 @@ def dpkt_hex(num):
         else:
             hex_text = buf
             break
+    f.close()
     return hex_text
     
 
